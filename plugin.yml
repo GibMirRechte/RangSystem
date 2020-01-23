@@ -1,0 +1,6 @@
+name: RangSystem
+version: 1.0
+author: GibMirRechte
+main: de.rang.gmr.main.Main
+commands:
+   rang:
