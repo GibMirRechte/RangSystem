@@ -1,33 +1,39 @@
 package de.rang.gmr.commands;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import de.rang.gmr.main.Main;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class Rang implements CommandExecutor {
 	
+	File file = new File("plugins//RangSystem//config.yml");
+	YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdlabel, String args[]) {
 		if(cmd.getName().equalsIgnoreCase("rang")) {
-			if(sender.hasPermission("df.perm.rang")) {
+			String Prefix = yaml.getString("Prefix").replace("&", "§");
+			if(sender.hasPermission(yaml.getString("Permission"))) {
 				if(args.length == 0) {
-					sender.sendMessage(Main.Prefix + "Bitte benutze /rang <Spieler> <Rang>");
+					sender.sendMessage(Prefix + yaml.getString("Nachrichten.Hilfe"));
 				}else if(args.length == 1) {
 					Player t = Bukkit.getPlayer(args[0]);
 					if(t != null) {
 						PermissionsEx.getUser(t).addGroup(args[1]);
-						sender.sendMessage(Main.Prefix + "Der Spieler §c" + t.getName() + " §7hat nun §c" + args[1] + "§7.");
+						sender.sendMessage(Prefix + yaml.getString("Nachrichten.RangVergeben").replace("&", "§").replace("%player%", t.getName()).replace("%rang%", args[1]));
 					}else {
-						sender.sendMessage(Main.Prefix + "Dieser Spieler ist nicht online!");
+						sender.sendMessage(Prefix + yaml.getString("Nachrichten.NichtOnline").replace("&", "§").replace("%player%", args[0]));
 					}
 				}
 			}else {
-				sender.sendMessage(Main.Prefix + "Dazu hast du keine Berechtigung!");
+				sender.sendMessage(Prefix + yaml.getString("Nachrichten.NoPerm"));
 			}
 		}
 		return false;
